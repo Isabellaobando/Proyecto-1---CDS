@@ -152,5 +152,21 @@ public class Partido {
 
         return true;
     }
+
+	public Equipo getEquipoLocal() {
+		return equipoLocal;
+	}
+
+	public Equipo getEquipoVisitante() {
+		return equipoVisitante;
+	}
+
+	public int getMarcadorLocal() {
+		return marcadorLocal;
+	}
+
+	public int getMarcadorVisitante() {
+		return marcadorVisitante;
+	}
 }
 

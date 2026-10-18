@@ -14,7 +14,7 @@ public class Competencia {
 
 	    public Competencia() {
 	    }
-
+	    
 	    public Competencia(String nombre, Date fechaInicio, Date fechaFin) {
 	        this.nombre = nombre;
 	        this.fechaInicio = fechaInicio;

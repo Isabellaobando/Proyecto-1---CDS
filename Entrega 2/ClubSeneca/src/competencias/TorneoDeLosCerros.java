@@ -1,12 +1,13 @@
 package competencias;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
 import equipos.Equipo;
 
-public class TorneoDeLosCerros {
+public class TorneoDeLosCerros extends Competencia{
 
 	private static final int PUNTOS_VICTORIA = 3;
 	private static final int PUNTOS_EMPATE = 1;
@@ -16,7 +17,14 @@ public class TorneoDeLosCerros {
 	private HashMap<Equipo, Integer> mapaTorneo;
 	private List<Partido> partidos;
 
-	// Falta constructor con los Super
+	public TorneoDeLosCerros(String nombre, Date fechaInicio, Date fechaFin, int jornadasTotales, 
+			int jornadaActual) {
+		super(nombre, fechaInicio, fechaFin);
+		this.jornadasTotales = jornadasTotales;
+		this.jornadaActual = jornadaActual;
+		this.mapaTorneo = new HashMap<>();
+		this.partidos = new ArrayList<>();
+	}
 
 	public void agregarEquipo(Equipo equipo) {
 		if (!mapaTorneo.containsKey(equipo)) {

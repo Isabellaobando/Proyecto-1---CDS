@@ -9,7 +9,10 @@ import java.util.List;
 import cafeteria.Local;
 import cafeteria.Producto;
 import cafeteria.Venta;
+import competencias.Competencia;
+import competencias.CompetenciaASCUN;
 import competencias.Partido;
+import competencias.TorneoDeLosCerros;
 import equipos.Equipo;
 
 public class Administrador extends EmpleadoClub{
@@ -156,24 +159,39 @@ public class Administrador extends EmpleadoClub{
 		System.out.println("Ventas en " + periodo + ": " + cantidadVentas + " | Total: $" + totalPeriodo);
 	}
 
-	public void generarReporteDeportivo(String periodo, Competencia torneo) {
-		SimpleDateFormat formato = new SimpleDateFormat("yyyy-MM");
-		int jugados = 0;
+	public void generarReporteDeportivo(String periodo, Competencia competencia) {
+		System.out.println("Reporte de " + competencia.getNombre() + " - " + periodo);
+		System.out.println("Equipos inscritos: " + competencia.consultarEquiposInscritos().size());
 
-		for (Partido partido : torneo.getPartidos()) {
-			if (formato.format(partido.getFecha()).equals(periodo) && partido.getEstado().equals("Finalizado")) {
-				System.out.println(partido.getEquipoLocal().getNombre() + " " + partido.getMarcadorLocal()
-						+ " - " + partido.getMarcadorVisitante() + " " + partido.getEquipoVisitante().getNombre());
-				jugados++;
+		if (competencia instanceof TorneoDeLosCerros) {
+			TorneoDeLosCerros torneo = (TorneoDeLosCerros) competencia;
+			SimpleDateFormat formato = new SimpleDateFormat("yyyy-MM");
+			int jugados = 0;
+
+			for (Partido partido : torneo.getPartidos()) {
+				if (partido.getFecha() != null && formato.format(partido.getFecha()).equals(periodo)
+						&& "Finalizado".equals(partido.getEstado())) {
+					System.out.println(partido.getEquipoLocal().getNombre() + " " + partido.getMarcadorLocal()
+							+ " - " + partido.getMarcadorVisitante() + " " + partido.getEquipoVisitante().getNombre());
+					jugados++;
+				}
+			}
+			System.out.println("Partidos jugados en " + periodo + ": " + jugados);
+
+			torneo.actualizarTablaPosiciones();
+			System.out.println("Tabla de posiciones:");
+			for (Equipo equipo : torneo.consultarTablaPosiciones()) {
+				System.out.println(torneo.determinarPosicion(equipo) + ". " + equipo.getNombre()
+						+ " - " + torneo.calcularPuntosEquipo(equipo) + " pts");
 			}
 		}
-		System.out.println("Partidos jugados en " + periodo + ": " + jugados);
-
-		torneo.actualizarTablaPosiciones();
-		System.out.println("Tabla de posiciones:");
-		for (Equipo equipo : torneo.consultarTablaPosiciones()) {
-			System.out.println(torneo.determinarPosicion(equipo) + ". " + equipo.getNombre()
-					+ " - " + torneo.calcularPuntosEquipo(equipo) + " pts");
+		else if (competencia instanceof CompetenciaASCUN) {
+			CompetenciaASCUN ascun = (CompetenciaASCUN) competencia;
+			System.out.println("Formato: fase de grupos + eliminacion directa");
+			System.out.println("Grupos: " + ascun.getNumGrupos() + " | Equipos por grupo: " + ascun.getEquiposPorGrupo());
+			for (Equipo equipo : ascun.consultarEquiposInscritos()) {
+				System.out.println("  " + equipo.getNombre());
+			}
 		}
 	}
 }
