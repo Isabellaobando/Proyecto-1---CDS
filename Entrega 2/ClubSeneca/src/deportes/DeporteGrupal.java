@@ -1,7 +1,9 @@
 package deportes;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -61,6 +63,22 @@ public abstract class DeporteGrupal extends Deporte {
 			mapaEquipo.put(equipo.getNombre(), equipo);
 		}
 	}
+	
+	
+	// Consulta los equipos segun la categoria
+	
+	public List<Equipo> consultarEquiposPorCategoria(String categoria){
+		Map<String, Equipo> mapaEquipo = this.catalogoEquipos.get(categoria);
+		List<Equipo> lista = new ArrayList<>(mapaEquipo.values());
+		return lista;
+	}
+	
+
+	
+	
+	
+	
+	
 	
 	
 	

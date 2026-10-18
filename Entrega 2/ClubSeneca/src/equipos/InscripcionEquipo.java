@@ -50,13 +50,13 @@ public class InscripcionEquipo {
 		return this.suspendido;
 	}
 	
-	public boolean inscribirJugador(Equipo equipo) {
-		return equipo.agregarJugador(this);
+	public boolean inscribirJugador() {
+		return this.equipo.agregarJugador(this);
 		
 	}
 	
 	public boolean cancelarInscripcion() {
-		return equipo.retirarJugador(this);
+		return this.equipo.retirarJugador(this);
 		
 	}
 	
@@ -77,6 +77,22 @@ public class InscripcionEquipo {
 		else {
 			return false;
 		}
+	}
+
+	public String getPosicion() {
+		return posicion;
+	}
+
+	public int getNumCamisa() {
+		return numCamisa;
+	}
+
+	public boolean isTitular() {
+		return titular;
+	}
+
+	public Date getFechaInscripcion() {
+		return fechaInscripcion;
 	}
 	
 	

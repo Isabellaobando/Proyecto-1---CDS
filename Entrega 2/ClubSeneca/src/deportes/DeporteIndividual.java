@@ -20,16 +20,12 @@ public abstract class DeporteIndividual extends Deporte{
 	
 	protected Map<String, Map<String, InscripcionDeporteIndividual>> catalogoJugadores;
 	
-	// multiplicadorElo = Un numero de cada deporte que ayuda a generar el calculo del elo del jugador
-	
-	protected int multiplicadorelo;
 	
 	// Constructor
 	
 	public DeporteIndividual(String nombre) {
 		super(nombre);
 		this.tipoDeporte = "INDIVIDUAL";
-		
 		this.catalogoJugadores = new HashMap<>();
 		
 	}
@@ -72,6 +68,16 @@ public abstract class DeporteIndividual extends Deporte{
 		return lista;
 	}
 	
+	// Actualiza el ranking (elo) del jugador, sumando o restando un valor 
+	
+	public void actualizarRanking(InscripcionDeporteIndividual jugador, double eloGanado) {
+		double viejoElo = jugador.consultarElo();
+		double nuevoElo = viejoElo + eloGanado;
+		jugador.setRankingElo(nuevoElo);
+	}
+	
+	
+	//TODO: programarPartidos
 	
 	
 	
