@@ -71,7 +71,9 @@ public abstract class Usuario {
 	public int getEdad() {
 		return this.edad;
 	}
-	
-	
 
+
+	public String getNombre() {
+		return nombre;
+	}
 }
