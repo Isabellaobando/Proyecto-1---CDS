@@ -1,97 +1,156 @@
+
 package competencias;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import equipos.Equipo;
+import estadistica.Estadisticas;
 
 public class Partido {
 
-	// Atributos
+    private Date fecha;
+    private String hora;
+    private String estado;
 
-	private Date fecha;
+    private Equipo equipoLocal;
+    private Equipo equipoVisitante;
+    private int marcadorLocal;
+    private int marcadorVisitante;
+    private List<Estadisticas> estadisticas;
 
-	private String hora;
+    public Partido() {
+        estadisticas = new ArrayList<Estadisticas>();
+    }
 
-	// estado = "Programado" o "Finalizado". Solo los partidos finalizados dan puntos en la tabla
+    public Partido(Date fecha, String hora, String estado,
+            Equipo equipoLocal, Equipo equipoVisitante) {
+        this.fecha = fecha;
+        this.hora = hora;
+        this.estado = estado;
+        this.equipoLocal = equipoLocal;
+        this.equipoVisitante = equipoVisitante;
+        estadisticas = new ArrayList<Estadisticas>();
+    }
 
-	private String estado;
+    public Date getFecha() {
+        return fecha;
+    }
 
-	private Equipo equipoLocal;
+    public void setFecha(Date fecha) {
+        this.fecha = fecha;
+    }
 
-	private Equipo equipoVisitante;
+    public String getHora() {
+        return hora;
+    }
 
-	private int marcadorLocal;
+    public void setHora(String hora) {
+        this.hora = hora;
+    }
 
-	private int marcadorVisitante;
+    public String getEstado() {
+        return estado;
+    }
 
-	// Constructor
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
 
-	public Partido(Date fecha, String hora, Equipo equipoLocal, Equipo equipoVisitante) {
-		this.fecha = fecha;
-		this.hora = hora;
-		this.equipoLocal = equipoLocal;
-		this.equipoVisitante = equipoVisitante;
-		this.estado = "Programado";
-		this.marcadorLocal = 0;
-		this.marcadorVisitante = 0;
-	}
+    public boolean programarPartido() {
+        if (fecha == null) {
+            return false;
+        }
 
-	// Metodos
+        if (hora == null || hora.equals("")) {
+            return false;
+        }
 
-	/*
-	 * Guarda el resultado del partido y lo marca como finalizado
-	 */
+        if (!validarEquipos()) {
+            return false;
+        }
 
-	public void registrarMarcador(int marcadorLocal, int marcadorVisitante) {
-		this.marcadorLocal = marcadorLocal;
-		this.marcadorVisitante = marcadorVisitante;
-		this.estado = "Finalizado";
-	}
+        if (!validarJugadoresHabilitados()) {
+            return false;
+        }
 
-	/*
-	 * Devuelve el nombre del equipo ganador, o "Empate". Si el partido no se ha jugado devuelve "Pendiente"
-	 */
+        estado = "Programado";
+        return true;
+    }
 
-	public String calcularResultado() {
-		if (!estado.equals("Finalizado")) {
-			return "Pendiente";
-		}
-		if (marcadorLocal > marcadorVisitante) {
-			return equipoLocal.getNombre();
-		}
-		else if (marcadorVisitante > marcadorLocal) {
-			return equipoVisitante.getNombre();
-		}
-		else {
-			return "Empate";
-		}
-	}
+    public void registrarMarcador(int marcadorLocal,
+            int marcadorVisitante) {
+        if (marcadorLocal >= 0 && marcadorVisitante >= 0) {
+            this.marcadorLocal = marcadorLocal;
+            this.marcadorVisitante = marcadorVisitante;
+            estado = "Finalizado";
+        }
+    }
 
-	public Date getFecha() {
-		return fecha;
-	}
+    public void registrarEstadistica(Estadisticas estadistica) {
+        if (estadistica != null) {
+            estadisticas.add(estadistica);
+        }
+    }
 
-	public String getHora() {
-		return hora;
-	}
+    public String calcularResultado() {
+        if (estado == null || !estado.equals("Finalizado")) {
+            return "Partido no finalizado";
+        }
 
-	public String getEstado() {
-		return estado;
-	}
+        if (marcadorLocal > marcadorVisitante) {
+            return "Victoria local: " + marcadorLocal
+                    + " - " + marcadorVisitante;
+        }
 
-	public Equipo getEquipoLocal() {
-		return equipoLocal;
-	}
+        if (marcadorVisitante > marcadorLocal) {
+            return "Victoria visitante: " + marcadorLocal
+                    + " - " + marcadorVisitante;
+        }
 
-	public Equipo getEquipoVisitante() {
-		return equipoVisitante;
-	}
+        return "Empate: " + marcadorLocal
+                + " - " + marcadorVisitante;
+    }
 
-	public int getMarcadorLocal() {
-		return marcadorLocal;
-	}
+    public List<Estadisticas> consultarEstadisticas() {
+        return estadisticas;
+    }
 
-	public int getMarcadorVisitante() {
-		return marcadorVisitante;
-	}
+    private boolean validarEquipos() {
+        if (equipoLocal == null || equipoVisitante == null) {
+            return false;
+        }
+
+        if (equipoLocal == equipoVisitante) {
+            return false;
+        }
+
+        if (!equipoLocal.puedeCompetir()) {
+            return false;
+        }
+
+        if (!equipoVisitante.puedeCompetir()) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private boolean validarJugadoresHabilitados() {
+        if (equipoLocal == null || equipoVisitante == null) {
+            return false;
+        }
+
+        if (equipoLocal.obtenerCantidadJugadoresHabilitados() == 0) {
+            return false;
+        }
+
+        if (equipoVisitante.obtenerCantidadJugadoresHabilitados() == 0) {
+            return false;
+        }
+
+        return true;
+    }
 }
+
