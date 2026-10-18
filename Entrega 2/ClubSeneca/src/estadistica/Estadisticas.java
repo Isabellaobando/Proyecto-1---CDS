@@ -40,7 +40,7 @@ public class Estadisticas {
     }
 
     public void actualizarEstadisticas(String nombre, int valor) {
-        datos.put(nombre, valor);
+        actualizarEstadistica(nombre, valor);
     }
 
     public String consultarPorJugador(Jugador jugador) {
@@ -58,12 +58,13 @@ public class Estadisticas {
     }
 
     public int consultarPartidosJugados() {
-        if (datos.containsKey("partidosJugados")) {
-            return datos.get("partidosJugados");
+        Integer partidos = datos.get("partidosJugados");
+
+        if (partidos == null) {
+            return 0;
         }
 
-        return 0;
+        return partidos;
     }
 }
 
-//Prueba de Git

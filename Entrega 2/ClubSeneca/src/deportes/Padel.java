@@ -1,6 +1,7 @@
 package deportes;
 
 import java.util.ArrayList;
+import instalaciones.Instalacion;
 import java.util.List;
 
 

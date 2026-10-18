@@ -1,12 +1,16 @@
 package competencias;
 
 import java.util.Date;
+import java.util.ArrayList;
+import java.util.List;
+import equipos.Equipo;
 
 public class Competencia {
 	
 	    protected String nombre;
 	    protected Date fechaInicio;
 	    protected Date fechaFin;
+	    protected List<Equipo> equiposInscritos = new ArrayList<Equipo>();
 
 	    public Competencia() {
 	    }
@@ -41,8 +45,21 @@ public class Competencia {
 	        this.fechaFin = fechaFin;
 	    }
 
-	    public boolean inscribirEquipo(Object equipo) {
-	        return equipo != null;
+	    public boolean inscribirEquipo(Equipo equipo) {
+	        if (equipo == null) {
+	            return false;
+	        }
+
+	        if (equiposInscritos.contains(equipo)) {
+	            return false;
+	        }
+
+	        equiposInscritos.add(equipo);
+	        return true;
+	    }
+	    
+	    public List<Equipo> consultarEquiposInscritos() {
+	        return new ArrayList<Equipo>(equiposInscritos);
 	    }
 
 }

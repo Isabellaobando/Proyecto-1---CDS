@@ -1,55 +1,64 @@
 
 package entrenamientos;
 
-import java.util.Date;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import usuarios.Jugador;
+import java.util.Map;
+
 import instalaciones.Instalacion;
+import usuarios.Jugador;
 
 public class SesionEntrenamiento {
 
-    private Date fecha;
-    private String hora;
+    private String fecha;
+    private String horaInicio;
     private int duracionMin;
-    private List<Jugador> convocados;
-    private HashMap<Jugador, String> asistencias;
     private Instalacion instalacion;
+    private List<Jugador> convocados;
+    private Map<Jugador, String> asistencias;
 
     public SesionEntrenamiento() {
         convocados = new ArrayList<Jugador>();
         asistencias = new HashMap<Jugador, String>();
     }
 
-    public SesionEntrenamiento(Date fecha, String hora, int duracionMin) {
+    public SesionEntrenamiento(String fecha, String horaInicio,
+            int duracionMin, Instalacion instalacion) {
+
+        this();
         this.fecha = fecha;
-        this.hora = hora;
-        this.duracionMin = duracionMin;
-        convocados = new ArrayList<Jugador>();
-        asistencias = new HashMap<Jugador, String>();
+        this.horaInicio = horaInicio;
+        setDuracionMin(duracionMin);
+        this.instalacion = instalacion;
     }
 
-    public Date getFecha() {
+    public String getFecha() {
         return fecha;
     }
 
-    public void setFecha(Date fecha) {
+    public void setFecha(String fecha) {
         this.fecha = fecha;
     }
 
-    public String getHora() {
-        return hora;
+    public String getHoraInicio() {
+        return horaInicio;
     }
 
-    public void setHora(String hora) {
-        this.hora = hora;
+    public void setHoraInicio(String horaInicio) {
+        this.horaInicio = horaInicio;
     }
 
     public int getDuracionMin() {
         return duracionMin;
     }
-    
+
+    public void setDuracionMin(int duracionMin) {
+        if (duracionMin > 0) {
+            this.duracionMin = duracionMin;
+        }
+    }
+
     public Instalacion getInstalacion() {
         return instalacion;
     }
@@ -58,34 +67,40 @@ public class SesionEntrenamiento {
         this.instalacion = instalacion;
     }
 
-    public void setDuracionMin(int duracionMin) {
-        this.duracionMin = duracionMin;
+    public void agregarJugadorConvocado(Jugador jugador) {
+        if (jugador != null && !convocados.contains(jugador)) {
+            convocados.add(jugador);
+        }
     }
 
-    public void agregarJugadorConvocado(Jugador jugador) {
-        if (jugador != null) {
-            if (!convocados.contains(jugador)) {
-                convocados.add(jugador);
-            }
-        }
+    public List<Jugador> consultarConvocados() {
+        return new ArrayList<Jugador>(convocados);
     }
 
     public void registrarAsistencia(Jugador jugador, String estado) {
-        if (jugador != null) {
-            if (convocados.contains(jugador)) {
-                if (validarEstado(estado)) {
-                    asistencias.put(jugador, estado);
-                }
+        if (jugador == null || estado == null) {
+            return;
+        }
+
+        if (convocados.contains(jugador)) {
+            if (estado.equals("Presente")
+                    || estado.equals("Ausente")
+                    || estado.equals("Justificado")) {
+                asistencias.put(jugador, estado);
             }
         }
     }
 
+    public String consultarAsistencia(Jugador jugador) {
+        return asistencias.get(jugador);
+    }
+
     public double calcularPorcentajeAsistencia() {
+        int presentes = 0;
+
         if (convocados.size() == 0) {
             return 0;
         }
-
-        int presentes = 0;
 
         for (Jugador jugador : convocados) {
             if ("Presente".equals(asistencias.get(jugador))) {
@@ -95,51 +110,4 @@ public class SesionEntrenamiento {
 
         return presentes * 100.0 / convocados.size();
     }
-
-    public List<Jugador> consultarConvocados() {
-        return convocados;
-    }
-
-    private boolean validarEstado(String estado) {
-        if (estado == null) {
-            return false;
-        }
-
-        if (estado.equals("Presente")) {
-            return true;
-        }
-
-        if (estado.equals("Ausente")) {
-            return true;
-        }
-
-        if (estado.equals("Justificado")) {
-            return true;
-        }
-
-        return false;
-    }
-
-    public boolean validarDisponibilidadInstalacion() {
-        if (instalacion == null) {
-            return false;
-        }
-
-        if (!instalacion.isDisponible()) {
-            return false;
-        }
-
-        if (hora == null) {
-            return false;
-        }
-
-        if (hora.compareTo(instalacion.getHoraApertura()) < 0) {
-            return false;
-        }
-
-        if (hora.compareTo(instalacion.getHoraCierre()) >= 0) {
-            return false;
-        }
-
-        return true;
-    }
+}
