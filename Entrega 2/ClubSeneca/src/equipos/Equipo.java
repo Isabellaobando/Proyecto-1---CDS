@@ -8,7 +8,7 @@ import java.util.Map;
 import competencias.Partido;
 import deportes.DeporteGrupal;
 import usuarios.Entrenador;
-import usuarios.Jugador;
+
 
 public class Equipo {
 	
@@ -33,6 +33,8 @@ public class Equipo {
 	
 	private Entrenador entrenador;
 	
+	// TODO: InscripcionCompetencia
+	
 	// Constructor 
 
 	public Equipo(String categoria, String nombre, boolean activo, DeporteGrupal deporte) {
@@ -52,6 +54,30 @@ public class Equipo {
 	 *  activo igual a true
 	 */
 	
+	public boolean isActivo() {
+		return activo;
+	}
+
+	public void setActivo(boolean activo) {
+		this.activo = activo;
+	}
+
+	public List<Partido> getProximosPartido() {
+		return proximosPartido;
+	}
+
+	public void setProximosPartido(List<Partido> proximosPartido) {
+		this.proximosPartido = proximosPartido;
+	}
+
+	public Entrenador getEntrenador() {
+		return entrenador;
+	}
+
+	public void setEntrenador(Entrenador entrenador) {
+		this.entrenador = entrenador;
+	}
+
 	public boolean agregarJugador(InscripcionEquipo inscripcionJugador) {
 		
 		if(! tieneCupoDisponible()) {
