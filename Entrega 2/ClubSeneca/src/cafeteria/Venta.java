@@ -7,9 +7,11 @@ import usuarios.EmpleadoClub;
 import usuarios.Usuario;
 
 public class Venta {
-    private static final double IMPUESTO_CAFETERIA = 0.08;
-    private static final double IMPUESTO_TIENDA = 0.19;
-    private static final double PORCENTAJE_PUNTOS = 0.02;
+    private static final double impuestoCafeteria = 0.08;
+    private static final double impuestoTienda = 0.19;
+    private static final double porcentajePuntos = 0.02;
+	private static double DescuentoEmpleado = 0.15;
+	private static double DescuentoUsuario = 0.08; 
 
     private Date fecha;
     private double subTotal;
@@ -17,13 +19,14 @@ public class Venta {
     private double descuento;
     private double propina;
     private double total;
-    private int puntosGenerados;
+    private double puntosGenerados;
     private String lugar;
     private Usuario comprador;
     private EmpleadoClub codigoEmpleado;
     private HashMap<Producto, Integer> productos;
 
-    public Venta(String lugar, Usuario comprador) {
+    public Venta(String lugar, Usuario comprador) 
+    {
         this.fecha = new Date();
         this.lugar = lugar;
         this.comprador = comprador;
@@ -54,7 +57,7 @@ public class Venta {
         return total;
     }
 
-    public int getPuntosGenerados() {
+    public double getPuntosGenerados() {
         return puntosGenerados;
     }
 
@@ -64,10 +67,6 @@ public class Venta {
 
     public Usuario getComprador() {
         return comprador;
-    }
-
-    public EmpleadoClub getCodigoEmpleado() {
-        return codigoEmpleado;
     }
 
     public HashMap<Producto, Integer> getProductos() {
@@ -86,9 +85,11 @@ public class Venta {
         this.codigoEmpleado = empleado;
     }
 
-    public double calcularSubTotal() {
+    public double calcularSubTotal() 
+    {
         double suma = 0;
-        for (Producto producto : productos.keySet()) {
+        for (Producto producto : productos.keySet()) 
+        {
             int cantidad = productos.get(producto);
             suma += producto.getPrecio() * cantidad;
         }
@@ -96,21 +97,30 @@ public class Venta {
         return subTotal;
     }
 
-    public double calcularImpuesto() {
-        if (lugar.equalsIgnoreCase("cafeteria")) {
-            this.impuesto = calcularSubTotal() * IMPUESTO_CAFETERIA;
-        } else {
-            this.impuesto = calcularSubTotal() * IMPUESTO_TIENDA;
+    public double calcularImpuesto() 
+    {
+        if (lugar.equalsIgnoreCase("cafeteria")) 
+        {
+            this.impuesto = this.subTotal * impuestoCafeteria;
+        } 
+        else 
+        {
+            this.impuesto = this.subTotal * impuestoTienda;
         }
         return impuesto;
     }
 
-    public double calcularDescuento() {
-        if (comprador instanceof EmpleadoClub) {
-            this.descuento = calcularSubTotal() * EmpleadoClub.getCodigoDescuento();
-        } else if (codigoEmpleado != null) {
-            this.descuento = calcularSubTotal() * EmpleadoClub.getCodigoFamilia();
-        } else {
+    public double calcularDescuento() 
+    {
+        if (comprador instanceof EmpleadoClub) 
+        {
+            this.descuento = this.subTotal * DescuentoEmpleado;
+        } 
+        else if (codigoEmpleado != null) {
+            this.descuento = this.subTotal * DescuentoUsuario;
+        } 
+        else 
+        {
             this.descuento = 0;
         }
         return descuento;
@@ -121,17 +131,16 @@ public class Venta {
         return propina;
     }
 
-    public double calcularTotal() {
-        calcularSubTotal();
-        calcularImpuesto();
-        calcularDescuento();
+    public double calcularTotal() 
+    {
         this.total = subTotal - descuento + impuesto + propina;
         return total;
     }
 
-    public int calcularPuntosFidelidad() {
+    public double calcularPuntosFidelidad() 
+    {
         double valorCompra = subTotal - descuento + impuesto;
-        this.puntosGenerados = (int) (valorCompra * PORCENTAJE_PUNTOS);
+        this.puntosGenerados = valorCompra * porcentajePuntos;
         return puntosGenerados;
     }
 }

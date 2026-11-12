@@ -73,28 +73,31 @@ public class Jugador extends Usuario {
 	 */
 	
 	public boolean inscribirseAEquipo(String posicion, int numCamisa, boolean titular, Date fechaInscripcion,
-			Equipo equipo) {
-		
+			Equipo equipo) 
+	{	
 		InscripcionEquipo inscripcion = new InscripcionEquipo(posicion, numCamisa, titular, false, fechaInscripcion , equipo, this);
-		if (!InscripcionEquipo.sePuedeInscribir(this, equipo)) {
+		if (!InscripcionEquipo.sePuedeInscribir(this, equipo)) 
+		{
 			return false;
 		}
-		else {
+		else 
+		{
 			boolean estado = inscripcion.inscribirJugador();
-			if (estado) {
+			if (estado) 
+			{
 				this.equipos.put(equipo, inscripcion);
 				return true;
 			}
 			
-			else {
+			else 
+			{
 				return false;
 			}
 		}
-		 
-		
 	}
 	
-	public List<DeporteIndividual> consultarDeportes(){
+	public List<DeporteIndividual> consultarDeportes()
+	{
 		return new ArrayList<>(this.deportesIndividuales.keySet());
 		
 	}
@@ -107,28 +110,27 @@ public class Jugador extends Usuario {
 	
 	//TODO: consultarEstadisticas y relacion con participacion partido
 	
-	public double consultarRanking(DeporteIndividual deporte) {
-		if (!this.deportesIndividuales.containsKey(deporte)) {
+	public double consultarRanking(DeporteIndividual deporte) 
+	{
+		if (!this.deportesIndividuales.containsKey(deporte)) 
+		{
 			return 0;
 		}
-		else {
+		else 
+		{
 			return this.deportesIndividuales.get(deporte).consultarElo();
 		}
 	}
 
 
-	public Date getFechaAfiliacion() {
+	public Date getFechaAfiliacion() 
+	{
 		return fechaAfiliacion;
 	}
 
 
-	public int getPuntosLealtad() {
+	public int getPuntosLealtad() 
+	{
 		return puntosLealtad;
 	}
-	
-	
-	
-	
-	
-
 }
