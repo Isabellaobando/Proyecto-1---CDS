@@ -1,88 +1,142 @@
 package deportes;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
+import instalaciones.Instalacion;
+import usuarios.Entrenador;
+import usuarios.Jugador;
+import usuarios.Usuario;
 
-public abstract class DeporteIndividual extends Deporte{
-	
-	// Atributos
-	
-	// niveles = una set estatico de los posibles niveles para un Deporte Individual
-	
+
+public abstract class DeporteIndividual extends Deporte
+{
 	public static final Set<String> niveles = new HashSet<String>(Set.of("PRINCIPANTE", "INTERMEDIO", "AVANZADO"));
-	
-	// Hash Map que contiene la informacion de los jugadores, donde la llave es el nivel y el valor es un Hash Map con llave codigo socio del jugador  y Valor InscripcionDeporteIndividual 
-	
-	protected Map<String, Map<String, InscripcionDeporteIndividual>> catalogoJugadores;
-	
-	
-	// Constructor
-	
-	public DeporteIndividual(String nombre) {
+	protected List<InscripcionDeporteIndividual> catalogoJugadores;
+	protected List<String> partidosProgramados;
+
+	public DeporteIndividual(String nombre) 
+	{
 		super(nombre);
 		this.tipoDeporte = "INDIVIDUAL";
-		this.catalogoJugadores = new HashMap<>();
-		
+		this.catalogoJugadores = new ArrayList<>();
+		this.partidosProgramados = new ArrayList<>();
 	}
-	
-	// Metodos
-	
-	/*
-	 * inscribirJugador inscribe a un jugador dentro de la estructura de datos para guardar los jugadores registrados al deporte. 
-	 * Si el jugador ya existia en el registro, retorna false
-	 */
-	
-	public boolean inscribirJugador(InscripcionDeporteIndividual registroJugador) {
-		String nivel = registroJugador.consultarNivel();
+
+	public boolean inscribirJugador(InscripcionDeporteIndividual registroJugador) 
+	{
 		String codigoJugador = registroJugador.consultarJugador().getCodigoSocio();
-		if (! this.catalogoJugadores.containsKey(nivel)) {
-			Map<String, InscripcionDeporteIndividual> mapaJugadores = new HashMap<>();
-			mapaJugadores.put(codigoJugador, registroJugador);
-			this.catalogoJugadores.put(nivel, mapaJugadores);
-			return true;
-			
-		}
-		
-		else {
-			Map<String, InscripcionDeporteIndividual> mapaJugadores = this.catalogoJugadores.get(nivel);
-			if (mapaJugadores.containsKey(codigoJugador)) {
+		for (InscripcionDeporteIndividual inscripcion : this.catalogoJugadores) 
+		{
+			if (inscripcion.consultarJugador().getCodigoSocio().equals(codigoJugador)) 
+			{
 				return false;
 			}
-			
-			mapaJugadores.put(codigoJugador, registroJugador);
-			return true;
 		}
+		this.catalogoJugadores.add(registroJugador);
+		return true;
 	}
-	
-	
-	// Devuelve una lista con todos los jugadores (inscripcion Jugador) que pertenecen a un nivel especifico
-	
-	public List<InscripcionDeporteIndividual> consultarJugadoresPorNivel(String nivel){
-		Map<String, InscripcionDeporteIndividual> mapaNivel = this.catalogoJugadores.get(nivel);
-		List<InscripcionDeporteIndividual> lista = new ArrayList<>(mapaNivel.values());
+
+	public List<InscripcionDeporteIndividual> consultarJugadoresPorNivel(String nivel)
+	{
+		List<InscripcionDeporteIndividual> lista = new ArrayList<>();
+		for (InscripcionDeporteIndividual inscripcion : this.catalogoJugadores) 
+		{
+			if (inscripcion.consultarNivel().equals(nivel)) 
+			{
+				lista.add(inscripcion);
+			}
+		}
 		return lista;
 	}
-	
-	// Actualiza el ranking (elo) del jugador, sumando o restando un valor 
-	
-	public void actualizarRanking(InscripcionDeporteIndividual jugador, double eloGanado) {
+
+	public void actualizarRanking(InscripcionDeporteIndividual jugador, double eloGanado) 
+	{
 		double viejoElo = jugador.consultarElo();
 		double nuevoElo = viejoElo + eloGanado;
 		jugador.setRankingElo(nuevoElo);
 	}
-	
-	
-	//TODO: programarPartidos
-	
-	
-	
-	
-	
-	
 
+	public boolean programarPartido(Usuario jugador1, Usuario jugador2, Instalacion instalacion, String fecha, String hora) 
+	{
+		if (!puedenJugar(jugador1, jugador2)) 
+		{
+			return false;
+		}
+		if (instalacion == null || !instalacion.isDisponible() || instalacion.getCapacidad() < 2) 
+		{
+			return false;
+		}
+		if (!instalacion.getTipoDeporte().equalsIgnoreCase(this.nombre)) 
+		{
+			return false;
+		}
+		this.partidosProgramados.add(fecha + " " + hora + " - " + jugador1.getNombre() + " vs "
+				+ jugador2.getNombre() + " en " + instalacion.getNombre());
+		return true;
+	}
+
+	public List<String> consultarPartidosProgramados() 
+	{
+		return new ArrayList<>(this.partidosProgramados);
+	}
+
+	public boolean puedenJugar(Usuario jugador1, Usuario jugador2) 
+	{
+		if (jugador1 == null || jugador2 == null || jugador1 == jugador2) 
+		{
+			return false;
+		}
+		if (jugador1 instanceof Entrenador || jugador2 instanceof Entrenador) 
+		{
+			return true;
+		}
+		int nivel1 = posicionNivel(consultarNivel(jugador1));
+		int nivel2 = posicionNivel(consultarNivel(jugador2));
+		if (nivel1 == -1 || nivel2 == -1) 
+		{
+			return false;
+		}
+		return Math.abs(nivel1 - nivel2) <= 1;
+	}
+
+	private String consultarNivel(Usuario usuario) 
+	{
+		if (!(usuario instanceof Jugador)) 
+		{
+			return null;
+		}
+		String codigo = ((Jugador) usuario).getCodigoSocio();
+		for (InscripcionDeporteIndividual inscripcion : this.catalogoJugadores) 
+		{
+			if (inscripcion.consultarJugador().getCodigoSocio().equals(codigo)) 
+			{
+				return inscripcion.consultarNivel();
+			}
+		}
+		return null;
+	}
+
+	private int posicionNivel(String nivel) 
+	{
+		if (nivel == null) 
+		{
+			return -1;
+		}
+		if (nivel.equalsIgnoreCase("PRINCIPIANTE")) 
+		{
+			return 0;
+		}
+		if (nivel.equalsIgnoreCase("INTERMEDIO")) 
+		{
+			return 1;
+		}
+		if (nivel.equalsIgnoreCase("AVANZADO")) 
+		{
+			return 2;
+		}
+		return -1;
+	}
 }

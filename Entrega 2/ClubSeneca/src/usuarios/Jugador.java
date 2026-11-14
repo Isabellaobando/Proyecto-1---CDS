@@ -2,135 +2,200 @@ package usuarios;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
+import cafeteria.BonoDescuento;
+import competencias.Torneo;
+import deportes.Deporte;
 import deportes.DeporteIndividual;
 import deportes.InscripcionDeporteIndividual;
 import equipos.Equipo;
 import equipos.InscripcionEquipo;
 
-public class Jugador extends Usuario {
-	
-	// Atributos
-	
-	// El codigo del socio
-	
+public class Jugador extends Usuario implements Participante{
 	private String codigoSocio;
-	
 	private Date fechaAfiliacion;
-	
 	private int puntosLealtad;
-	
-	// deportesIndividuales = un mapa cuya llave es el deporte, y valor la inscripcion del jugador al deporte
-	
-	private Map<DeporteIndividual, InscripcionDeporteIndividual> deportesIndividuales;
-	
-	// equipos = un mapa cuya llave es el equipo, y valor la inscripcion del jugador al deporte
-	private Map<Equipo, InscripcionEquipo> equipos;
-	
-	// Constructor
+	private List<InscripcionDeporteIndividual> deportesIndividuales;
+	private List<InscripcionEquipo> equipos;
+	public static final String TIPO_SOCIO = "Socio";
+	public static final String TIPO_ESTUDIANTE = "Estudiante";
+	public static final String TIPO_EXTERNO = "Externo";
+	private String tipo;
+	private List<BonoDescuento> bonos;
 
 	public Jugador(int id, String nombre, String email, String login, String password, String telefono,
-			Date fechaNacimiento, String codigoSocio, Date fechaAfiliacion, int puntosLealtad, int edad) {
-		
+			Date fechaNacimiento, String codigoSocio, Date fechaAfiliacion, int puntosLealtad, int edad, String tipo) 
+	{
 		super(id, nombre, email, login, password, telefono, fechaNacimiento, edad);
 		this.codigoSocio = codigoSocio;
 		this.fechaAfiliacion = fechaAfiliacion;
 		this.puntosLealtad = puntosLealtad;
-		this.deportesIndividuales = new HashMap<>();
+		this.tipo = tipo;
+		this.deportesIndividuales = new ArrayList<>();
+		this.equipos = new ArrayList<>();
+		this.bonos = new ArrayList<>();
 	}
-	
-	
-	// Metodos
-	
-	public String getCodigoSocio() {
+
+	public String getTipo() 
+	{
+		return tipo;
+	}
+
+	public String getCodigoSocio() 
+	{
 		return this.codigoSocio;
 	}
-	
-	/*
-	 * Este metodo Inscribe al jugador a un deporte individual, si reporta True, la inscripcion fue exitosa, si retorna
-	 * false, el jugador ya estaba inscrito en ese deporte individual.
-	 */
-	
-	public boolean inscribirseADeporte(DeporteIndividual deporte, String nivel) {
+
+	public boolean inscribirseADeporte(DeporteIndividual deporte, String nivel) 
+	{
 		InscripcionDeporteIndividual inscripcion = new InscripcionDeporteIndividual(deporte, nivel, 0, this);
 		boolean estadoInscripcion = inscripcion.inscribirJugador();
 		if(estadoInscripcion) {
-			this.deportesIndividuales.put(deporte, inscripcion);
+			this.deportesIndividuales.add(inscripcion);
 			return true;
 		}
 		else {
 			return false;
 		}
-		
+
 	}
-	
-	/*
-	 * inscribe al jugador del equipo y devuelve true si fue exitosa, o false si: no hay espacio en el equipo, no 
-	 * cumple la categoria
-	 */
-	
+
 	public boolean inscribirseAEquipo(String posicion, int numCamisa, boolean titular, Date fechaInscripcion,
-			Equipo equipo) 
-	{	
+			Equipo equipo)
+	{
 		InscripcionEquipo inscripcion = new InscripcionEquipo(posicion, numCamisa, titular, false, fechaInscripcion , equipo, this);
-		if (!InscripcionEquipo.sePuedeInscribir(this, equipo)) 
+		if (!InscripcionEquipo.sePuedeInscribir(this, equipo))
 		{
 			return false;
 		}
-		else 
+		else
 		{
 			boolean estado = inscripcion.inscribirJugador();
-			if (estado) 
+			if (estado)
 			{
-				this.equipos.put(equipo, inscripcion);
+				this.equipos.add(inscripcion);
 				return true;
 			}
-			
-			else 
+
+			else
 			{
 				return false;
 			}
 		}
 	}
-	
+
 	public List<DeporteIndividual> consultarDeportes()
 	{
-		return new ArrayList<>(this.deportesIndividuales.keySet());
-		
+		List<DeporteIndividual> deportes = new ArrayList<>();
+		for (InscripcionDeporteIndividual inscripcion : this.deportesIndividuales)
+		{
+			deportes.add(inscripcion.consultarDeporte());
+		}
+		return deportes;
 	}
-	
-	
-	public List<Equipo> consultarEquipos(){
-		return new ArrayList<>(this.equipos.keySet());
-		
-	}
-	
-	//TODO: consultarEstadisticas y relacion con participacion partido
-	
-	public double consultarRanking(DeporteIndividual deporte) 
+
+
+	public List<Equipo> consultarEquipos()
 	{
-		if (!this.deportesIndividuales.containsKey(deporte)) 
+		List<Equipo> listaEquipos = new ArrayList<>();
+		for (InscripcionEquipo inscripcion : this.equipos)
 		{
-			return 0;
+			listaEquipos.add(inscripcion.getEquipo());
 		}
-		else 
-		{
-			return this.deportesIndividuales.get(deporte).consultarElo();
-		}
+		return listaEquipos;
 	}
 
+	private InscripcionDeporteIndividual buscarInscripcionDeporte(Deporte deporte)
+	{
+		for (InscripcionDeporteIndividual inscripcion : this.deportesIndividuales)
+		{
+			if (inscripcion.consultarDeporte() == deporte)
+			{
+				return inscripcion;
+			}
+		}
+		return null;
+	}
 
-	public Date getFechaAfiliacion() 
+	public Date getFechaAfiliacion()
 	{
 		return fechaAfiliacion;
 	}
 
-
-	public int getPuntosLealtad() 
+	public int getPuntosLealtad()
 	{
 		return puntosLealtad;
+	}
+
+
+	@Override
+	public double getRanking(Deporte deporte) 
+	{
+		InscripcionDeporteIndividual inscripcion = buscarInscripcionDeporte(deporte);
+		if (inscripcion == null)
+		{
+			return 0;
+		}
+		else
+		{
+			return inscripcion.consultarElo();
+		}
+	}
+
+	@Override
+	public boolean puedeInscribirse(Torneo torneo) 
+	{
+		if (!(torneo.getDeporte() instanceof DeporteIndividual))
+		{
+			return false;
+		}
+		InscripcionDeporteIndividual inscripcion = buscarInscripcionDeporte(torneo.getDeporte());
+		if (inscripcion == null)
+		{
+			return true;
+		}
+		return inscripcion.consultarNivel().equalsIgnoreCase(torneo.getCategoria());
+	}
+
+	@Override
+	public List<Usuario> getIntegrantes() 
+	{
+		List<Usuario> integrantes = new ArrayList<>();
+		integrantes.add(this);
+		return integrantes;
+	}
+
+	public void agregarBono(BonoDescuento bono) 
+	{
+		if (bono != null)
+		{
+			this.bonos.add(bono);
+		}
+	}
+
+	public List<BonoDescuento> getBonosDisponibles() 
+	{
+		List<BonoDescuento> disponibles = new ArrayList<>();
+		for (BonoDescuento bono : this.bonos)
+		{
+			if (!bono.getRedimido())
+			{
+				disponibles.add(bono);
+			}
+		}
+		return disponibles;
+	}
+
+	public BonoDescuento usarBono(String codigo) 
+	{
+		for (BonoDescuento bono : getBonosDisponibles())
+		{
+			if (bono.getCodigo().equals(codigo))
+			{
+				return bono;
+			}
+		}
+		return null;
 	}
 }

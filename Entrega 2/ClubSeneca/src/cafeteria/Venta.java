@@ -1,17 +1,18 @@
 package cafeteria;
 
 import java.util.Date;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
 
 import usuarios.EmpleadoClub;
 import usuarios.Usuario;
 
-public class Venta {
+public class Venta 
+{
     private static final double impuestoCafeteria = 0.08;
     private static final double impuestoTienda = 0.19;
     private static final double porcentajePuntos = 0.02;
 	private static double DescuentoEmpleado = 0.15;
-	private static double DescuentoUsuario = 0.08; 
 
     private Date fecha;
     private double subTotal;
@@ -23,121 +24,157 @@ public class Venta {
     private String lugar;
     private Usuario comprador;
     private EmpleadoClub codigoEmpleado;
-    private HashMap<Producto, Integer> productos;
-
-    public Venta(String lugar, Usuario comprador) 
+    private BonoDescuento bonoAplicado;
+    private List<Producto> productos;
+    
+    public Venta(String lugar, Usuario comprador)
     {
         this.fecha = new Date();
         this.lugar = lugar;
         this.comprador = comprador;
-        this.productos = new HashMap<>();
+        this.productos = new ArrayList<>();
     }
 
-    public Date getFecha() {
+    public Date getFecha() 
+    {
         return fecha;
     }
 
-    public double getSubTotal() {
+    public double getSubTotal() 
+    {
         return subTotal;
     }
 
-    public double getImpuesto() {
+    public double getImpuesto() 
+    {
         return impuesto;
     }
 
-    public double getDescuento() {
+    public double getDescuento() 
+    {
         return descuento;
     }
 
-    public double getPropina() {
+    public double getPropina() 
+    {
         return propina;
     }
 
-    public double getTotal() {
+    public double getTotal() 
+    {
         return total;
     }
 
-    public double getPuntosGenerados() {
+    public double getPuntosGenerados() 
+    {
         return puntosGenerados;
     }
 
-    public String getLugar() {
+    public String getLugar() 
+    {
         return lugar;
     }
 
-    public Usuario getComprador() {
+    public Usuario getComprador() 
+    {
         return comprador;
     }
 
-    public HashMap<Producto, Integer> getProductos() {
+    public List<Producto> getProductos() 
+    {
         return productos;
     }
 
-    public void agregarProducto(Producto producto, int cantidad) {
-        if (!productos.containsKey(producto)) {
-            productos.put(producto, cantidad);
-        } else {
-            productos.put(producto, cantidad + productos.get(producto));
+    public void agregarProducto(Producto producto, int cantidad) 
+    {
+        for (int i = 0; i < cantidad; i++) 
+        {
+            productos.add(producto);
         }
     }
 
-    public void aplicarCodigoDescuento(EmpleadoClub empleado) {
+    public void aplicarCodigoDescuento(EmpleadoClub empleado) 
+    {
         this.codigoEmpleado = empleado;
     }
 
-    public double calcularSubTotal() 
+    public boolean aplicarBono(BonoDescuento bono)
+    {
+        if (bono == null || bono.getRedimido() || tieneOtroDescuento())
+        {
+            return false;
+        }
+        this.bonoAplicado = bono;
+        return true;
+    }
+
+    public BonoDescuento getBonoAplicado() 
+    {
+        return bonoAplicado;
+    }
+
+    private boolean tieneOtroDescuento()
+    {
+        return comprador instanceof EmpleadoClub || codigoEmpleado != null;
+    }
+
+    public double calcularSubTotal()
     {
         double suma = 0;
-        for (Producto producto : productos.keySet()) 
+        for (Producto producto : productos)
         {
-            int cantidad = productos.get(producto);
-            suma += producto.getPrecio() * cantidad;
+            suma += producto.getPrecio();
         }
         this.subTotal = suma;
         return subTotal;
     }
 
-    public double calcularImpuesto() 
+    public double calcularImpuesto()
     {
-        if (lugar.equalsIgnoreCase("cafeteria")) 
+        if (lugar.equalsIgnoreCase("cafeteria"))
         {
             this.impuesto = this.subTotal * impuestoCafeteria;
-        } 
-        else 
+        }
+        else
         {
             this.impuesto = this.subTotal * impuestoTienda;
         }
         return impuesto;
     }
 
-    public double calcularDescuento() 
+    public double calcularDescuento()
     {
-        if (comprador instanceof EmpleadoClub) 
+        if (comprador instanceof EmpleadoClub && bonoAplicado == null)
         {
             this.descuento = this.subTotal * DescuentoEmpleado;
-        } 
-        else if (codigoEmpleado != null) {
-            this.descuento = this.subTotal * DescuentoUsuario;
-        } 
-        else 
+        }
+        else if (bonoAplicado != null)
+        {
+            this.descuento = bonoAplicado.calcularDescuento(this.subTotal);
+        }
+        else
         {
             this.descuento = 0;
         }
         return descuento;
     }
 
-    public double calcularPropina(double porcentaje) {
+    public double calcularPropina(double porcentaje) 
+    {
         this.propina = calcularSubTotal() * porcentaje;
         return propina;
     }
 
-    public double calcularTotal() 
+    public double calcularTotal()
     {
+        calcularSubTotal();
+        calcularImpuesto();
+        calcularDescuento();
         this.total = subTotal - descuento + impuesto + propina;
         return total;
     }
 
-    public double calcularPuntosFidelidad() 
+    public double calcularPuntosFidelidad()
     {
         double valorCompra = subTotal - descuento + impuesto;
         this.puntosGenerados = valorCompra * porcentajePuntos;

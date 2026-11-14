@@ -1,189 +1,210 @@
 package equipos;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import competencias.Partido;
+import competencias.Torneo;
+import deportes.Deporte;
 import deportes.DeporteGrupal;
 import usuarios.Entrenador;
+import usuarios.Participante;
+import usuarios.Usuario;
 
 
-public class Equipo {
-	
-	// Atributos
-	
+public class Equipo implements Participante 
+{
 	private String categoria;
-	
 	private String nombre;
-	
-	// activo = Determina si un equipo puede jugar o no 
-	
 	private boolean activo;
-	
 	private DeporteGrupal deporte;
-	
-	// proximosPartido = muestra cual es el siguiente partido para ese equipo, arrayList sola si no tiene proximos Partidos
-	
 	private List<Partido> proximosPartido;
-	
-	// jugadores = un mapa donde la llave es el codigo de socio del jugador del que se quiere saber su informacion. 
-	private Map<String, InscripcionEquipo> jugadores;
-	
+	private List<InscripcionEquipo> jugadores;
 	private Entrenador entrenador;
-	
-	// TODO: InscripcionCompetencia
-	
-	// Constructor 
+	private double desempeno;
 
-	public Equipo(String categoria, String nombre, boolean activo, DeporteGrupal deporte) {
+	public Equipo(String categoria, String nombre, boolean activo, DeporteGrupal deporte) 
+	{
 		this.categoria = categoria;
 		this.nombre = nombre;
 		this.activo = false;
 		this.deporte = deporte;
 		this.proximosPartido = new ArrayList<>();
-		this.jugadores = new HashMap<>();
+		this.jugadores = new ArrayList<>();
 	}
-	
-	// Metodos
-	
-	/*
-	 *  Este metodo agrega la inscripcion del jugador a la informacion del equipo. Si el equipo esta lleno, retorna
-	 *  false. Si no esta lleno, agrega el jugador al mapa. Ademas, si se alcanzo el minimo de jugadores, se pone
-	 *  activo igual a true
-	 */
-	
-	public boolean isActivo() {
+
+	public boolean isActivo() 
+	{
 		return activo;
 	}
 
-	public void setActivo(boolean activo) {
+	public void setActivo(boolean activo) 
+	{
 		this.activo = activo;
 	}
 
-	public List<Partido> getProximosPartido() {
+	public List<Partido> getProximosPartido() 
+	{
 		return proximosPartido;
 	}
 
-	public void setProximosPartido(List<Partido> proximosPartido) {
+	public void setProximosPartido(List<Partido> proximosPartido) 
+	{
 		this.proximosPartido = proximosPartido;
 	}
 
-	public Entrenador getEntrenador() {
+	public Entrenador getEntrenador() 
+	{
 		return entrenador;
 	}
 
-	public void setEntrenador(Entrenador entrenador) {
+	public void setEntrenador(Entrenador entrenador) 
+	{
 		this.entrenador = entrenador;
 	}
 
-	public boolean agregarJugador(InscripcionEquipo inscripcionJugador) {
-		
-		if(! tieneCupoDisponible()) {
+	public boolean agregarJugador(InscripcionEquipo inscripcionJugador) 
+	{
+		String codigoJugador = inscripcionJugador.getJugador().getCodigoSocio();
+		if(! tieneCupoDisponible() || consultarJugador(codigoJugador) != null) 
+		{
 			return false;
 		}
-		
-		else {
-			String codigoJugador = inscripcionJugador.getJugador().getCodigoSocio();
-			this.jugadores.put(codigoJugador, inscripcionJugador);
-			if (puedeCompetir()) {
+		else 
+		{
+			this.jugadores.add(inscripcionJugador);
+			if (puedeCompetir()) 
+			{
 				this.activo = true;
 			}
 			return true;
 		}
-		
-		
 	}
-	
-	/*
-	 * Este metodo quita a un jugador del equipo. Si el equipo esta vacio o no existe el jugador, retorna false, de
-	 * resto, devuelve true 
-	 */
-	
-	public boolean retirarJugador(InscripcionEquipo inscripcionJugador) {
+
+	public boolean retirarJugador(InscripcionEquipo inscripcionJugador) 
+	{
 		String codigoSocio = inscripcionJugador.getJugador().getCodigoSocio();
-		if(! this.jugadores.containsKey(codigoSocio) || this.jugadores.size() == 0) {
+		InscripcionEquipo inscripcion = consultarJugador(codigoSocio);
+		if(inscripcion == null) 
+		{
 			return false;
 		}
-		
-		else {
-			this.jugadores.remove(codigoSocio);
-			if (!puedeCompetir()) {
+		else 
+		{
+			this.jugadores.remove(inscripcion);
+			if (!puedeCompetir()) 
+			{
 				this.activo = false;
-				
 			}
 			return true;
 		}
 	}
-	
-	/*
-	 * Devuelve una lista cuyos valores son la informacion de los registros de los jugadores.
-	 */
-	
-	public List<InscripcionEquipo> consultarJugadores(){
-		List<InscripcionEquipo> listaJugadores = new ArrayList<>(this.jugadores.values());
+
+	public List<InscripcionEquipo> consultarJugadores()
+	{
+		List<InscripcionEquipo> listaJugadores = new ArrayList<>(this.jugadores);
 		return listaJugadores;
 	}
-	
-	
-	/*
-	 * consultarJugador recibe el codigo socio de un jugador y devuelve la informacion de su inscripcion
-	 */
-	
-	public InscripcionEquipo consultarJugador(String codigoSocio) {
-		if (this.jugadores.containsKey(codigoSocio)) {
-			return this.jugadores.get(codigoSocio);
-		}
-		
-		else {
-			return null;
-		}
-	}
-	
-	
-	
-	// Mira si el equipo se encuentra lleno o no
-	
-		public boolean tieneCupoDisponible(){
-			if(this.jugadores.size() >= this.deporte.getMaxJugadores()) {
-				return false;
-			} else {
-				return true;
+
+	public InscripcionEquipo consultarJugador(String codigoSocio) 
+	{
+		for (InscripcionEquipo inscripcion : this.jugadores) 
+		{
+			if (inscripcion.getJugador().getCodigoSocio().equals(codigoSocio)) 
+			{
+				return inscripcion;
 			}
 		}
-	
-	
-	
-	// Mira si el equipo cumple con el minimo de jugadores para competir o hacer parte de partidos
-	
-	public boolean puedeCompetir() {
-		if (this.jugadores.size() >= this.deporte.getMinJugadores()) {
+		return null;
+	}
+
+	public boolean tieneCupoDisponible()
+	{
+		if(this.jugadores.size() >= this.deporte.getMaxJugadores()) 
+		{
+			return false;
+		} 
+		else 
+		{
 			return true;
 		}
-		else {
+	}
+
+	public boolean puedeCompetir() 
+	{
+		if (this.jugadores.size() >= this.deporte.getMinJugadores()) 
+		{
+			return true;
+		}
+		else 
+		{
 			return false;
 		}
 	}
-	
-	
-	public int obtenerCantidadJugadoresHabilitados() {
+
+
+	public int obtenerCantidadJugadoresHabilitados() 
+	{
 		List<InscripcionEquipo> listaJugadores = consultarJugadores();
 		int contador = 0;
-		for(InscripcionEquipo jugador: listaJugadores) {
-			if (!jugador.getSuspendido()) {
+		for(InscripcionEquipo jugador: listaJugadores) 
+		{
+			if (!jugador.getSuspendido()) 
+			{
 				contador ++;
 			}
 		}
-		
 		return contador;
 	}
-	
-	public String getCategoria() {
+
+	public String getCategoria() 
+	{
 		return this.categoria;
 	}
-	
-	public String getNombre() {
+
+	public String getNombre() 
+	{
 		return this.nombre;
+	}
+
+	public double getDesempeno() 
+	{
+		return desempeno;
+	}
+
+	public void setDesempeno(double desempeno) 
+	{
+		this.desempeno = desempeno;
+	}
+
+	@Override
+	public double getRanking(Deporte deporte) 
+	{
+		return this.desempeno;
+	}
+
+	@Override
+	public boolean puedeInscribirse(Torneo torneo) 
+	{
+		if (torneo.getDeporte() != this.deporte) 
+		{
+			return false;
+		}
+		if (!this.categoria.equalsIgnoreCase(torneo.getCategoria())) 
+		{
+			return false;
+		}
+		return puedeCompetir();
+	}
+
+	@Override
+	public List<Usuario> getIntegrantes() 
+	{
+		List<Usuario> integrantes = new ArrayList<>();
+		for (InscripcionEquipo inscripcion : this.jugadores) 
+		{
+			integrantes.add(inscripcion.getJugador());
+		}
+		return integrantes;
 	}
 }
