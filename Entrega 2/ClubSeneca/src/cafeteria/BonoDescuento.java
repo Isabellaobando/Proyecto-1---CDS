@@ -2,8 +2,7 @@ package cafeteria;
 
 import java.util.Date;
 
-public class BonoDescuento
-{
+public class BonoDescuento implements java.io.Serializable {
 	private String codigo;
 	private double porcentaje;
 	private Date fechaEmision;

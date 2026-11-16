@@ -5,7 +5,7 @@ import instalaciones.Instalacion;
 import java.util.List;
 
 
-public class Padel extends DeporteIndividual {
+public class Padel extends DeporteIndividual implements java.io.Serializable {
 
 	// Atributos
 	
@@ -36,7 +36,7 @@ public class Padel extends DeporteIndividual {
 		 */
 		
 		public static double calcularNuevoElo(double eloActual, String ganoPartido) {
-			if (ganoPartido == "SI") {
+			if ("SI".equalsIgnoreCase(ganoPartido)) {
 				double nuevoElo = eloActual*(1 + 1*Padel.multiplicadorElo);
 				return nuevoElo;
 			}

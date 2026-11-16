@@ -8,7 +8,7 @@ import java.util.List;
 import instalaciones.Instalacion;
 import usuarios.Jugador;
 
-public class SesionEntrenamiento {
+public class SesionEntrenamiento implements java.io.Serializable {
 
     private String fecha;
     private String horaInicio;

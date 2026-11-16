@@ -6,7 +6,7 @@ import java.util.List;
 
 
 
-public class TenisMesa extends DeporteIndividual {
+public class TenisMesa extends DeporteIndividual implements java.io.Serializable {
 
 	// Atributos
 	
@@ -37,7 +37,7 @@ public class TenisMesa extends DeporteIndividual {
 		 */
 		
 		public static double calcularNuevoElo(double eloActual, String ganoPartido) {
-			if (ganoPartido == "SI") {
+			if ("SI".equalsIgnoreCase(ganoPartido)) {
 				double nuevoElo = eloActual*(1 + 1*TenisMesa.multiplicadorElo);
 				return nuevoElo;
 			}

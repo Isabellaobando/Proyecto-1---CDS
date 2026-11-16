@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import equipos.Equipo;
 
-public class Competencia {
+public class Competencia implements java.io.Serializable {
 	
 	    protected String nombre;
 	    protected Date fechaInicio;

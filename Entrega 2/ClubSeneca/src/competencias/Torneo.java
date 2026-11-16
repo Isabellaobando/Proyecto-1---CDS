@@ -10,8 +10,7 @@ import equipos.Equipo;
 import usuarios.Pareja;
 import usuarios.Participante;
 
-public abstract class Torneo
-{
+public abstract class Torneo implements java.io.Serializable {
 
 	public static final String POR_INICIAR = "Por iniciar";
 	public static final String EN_CURSO = "En curso";

@@ -1,6 +1,6 @@
 package deportes;
 
-public class Voleibol extends DeporteGrupal {
+public class Voleibol extends DeporteGrupal implements java.io.Serializable {
 	
 	public Voleibol(String nombre, int minJugadores, int maxJugadores) {
 		super(nombre,minJugadores,maxJugadores);

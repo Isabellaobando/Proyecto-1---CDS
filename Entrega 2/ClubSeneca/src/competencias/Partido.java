@@ -8,7 +8,7 @@ import java.util.List;
 import equipos.Equipo;
 import estadistica.Estadisticas;
 
-public class Partido {
+public class Partido implements java.io.Serializable {
 
     private Date fecha;
     private String hora;

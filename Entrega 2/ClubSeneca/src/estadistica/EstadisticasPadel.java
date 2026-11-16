@@ -1,6 +1,6 @@
 package estadistica;
 
-public class EstadisticasPadel extends Estadisticas{
+public class EstadisticasPadel extends Estadisticas implements java.io.Serializable {
 	
 	 private int setsGanados;
 

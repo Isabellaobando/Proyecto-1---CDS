@@ -3,8 +3,7 @@ package competencias;
 import java.util.Date;
 import usuarios.Participante;
 
-public class InscripcionTorneo
-{
+public class InscripcionTorneo implements java.io.Serializable {
 	private Participante participante;
 	private Date fechaInscripcion;
 	private boolean preferencial;

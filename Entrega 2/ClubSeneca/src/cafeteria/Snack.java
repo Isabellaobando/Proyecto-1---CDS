@@ -2,7 +2,7 @@ package cafeteria;
 
 import java.util.List;
 
-public class Snack extends Producto{
+public class Snack extends Producto implements java.io.Serializable {
 	private List<String> alergenos;
 	
 	public Snack(String nombre, double precio, String categoria, int stock, List<String> alergenos) {

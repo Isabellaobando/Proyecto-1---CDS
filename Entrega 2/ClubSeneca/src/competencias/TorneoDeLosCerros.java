@@ -7,7 +7,7 @@ import java.util.List;
 
 import equipos.Equipo;
 
-public class TorneoDeLosCerros extends Competencia{
+public class TorneoDeLosCerros extends Competencia implements java.io.Serializable {
 
 	private static final int PUNTOS_VICTORIA = 3;
 	private static final int PUNTOS_EMPATE = 1;

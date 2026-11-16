@@ -2,7 +2,7 @@ package competencias;
 
 import java.util.Date;
 
-public class CompetenciaASCUN extends Competencia{
+public class CompetenciaASCUN extends Competencia implements java.io.Serializable {
 	
 	private int numGrupos;
     private int equiposPorGrupo;

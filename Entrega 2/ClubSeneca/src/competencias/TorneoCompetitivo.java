@@ -7,8 +7,7 @@ import usuarios.EmpleadoClub;
 import usuarios.Participante;
 import usuarios.Usuario;
 
-public class TorneoCompetitivo extends Torneo
-{
+public class TorneoCompetitivo extends Torneo implements java.io.Serializable {
 	private double tarifaInscripcion;
 	private double totalRecaudado;
 

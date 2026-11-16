@@ -1,6 +1,10 @@
 package logica;
 
 import java.text.SimpleDateFormat;
+
+import deportes.DeporteIndividual;
+import instalaciones.Instalacion;
+import entrenamientos.SesionEntrenamiento;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,14 +22,17 @@ import usuarios.EmpleadoClub;
 import usuarios.Jugador;
 import usuarios.Participante;
 
-public class ClubSeneca
-{
+public class ClubSeneca implements java.io.Serializable {
 	private static final int STOCK_MINIMO = 5;
 	private List<EmpleadoClub> empleados;
 	private List<Jugador> jugadores;
 	private List<Equipo> equipos;
 	private List<Local> locales;
 	private List<Torneo> torneos;
+	
+	private List<DeporteIndividual> deportesIndividuales;
+	private List<Instalacion> instalaciones;
+	private List<SesionEntrenamiento> sesionesEntrenamiento;
 
 	public ClubSeneca()
 	{
@@ -34,6 +41,10 @@ public class ClubSeneca
 		this.equipos = new ArrayList<>();
 		this.locales = new ArrayList<>();
 		this.torneos = new ArrayList<>();
+		
+		this.deportesIndividuales = new ArrayList<>();
+		this.instalaciones = new ArrayList<>();
+		this.sesionesEntrenamiento = new ArrayList<>();
 	}
 
 	public List<EmpleadoClub> getEmpleados()
@@ -59,6 +70,39 @@ public class ClubSeneca
 	public List<Torneo> getTorneos()
 	{
 		return torneos;
+	}
+	
+	public List<DeporteIndividual> getDeportesIndividuales()
+	{
+	    return deportesIndividuales;
+	}
+
+	public List<Instalacion> getInstalaciones() { return instalaciones; }
+	public List<SesionEntrenamiento> getSesionesEntrenamiento() { return sesionesEntrenamiento; }
+
+	public boolean agregarInstalacion(Instalacion instalacion) {
+		if (instalacion == null || consultarInstalacion(instalacion.getNombre()) != null) return false;
+		instalaciones.add(instalacion);
+		return true;
+	}
+
+	public Instalacion consultarInstalacion(String nombre) {
+		if (nombre == null) return null;
+		for (Instalacion i : instalaciones) if (i.getNombre().equalsIgnoreCase(nombre)) return i;
+		return null;
+	}
+
+	public boolean eliminarInstalacion(String nombre) {
+		Instalacion i = consultarInstalacion(nombre);
+		if (i == null) return false;
+		for (SesionEntrenamiento s : sesionesEntrenamiento) if (s.getInstalacion() == i) return false;
+		return instalaciones.remove(i);
+	}
+
+	public boolean agregarSesionEntrenamiento(SesionEntrenamiento sesion) {
+		if (sesion == null || sesion.getInstalacion() == null || !instalaciones.contains(sesion.getInstalacion())) return false;
+		sesionesEntrenamiento.add(sesion);
+		return true;
 	}
 
 	public void agregarEmpleado(EmpleadoClub empleado)
@@ -220,45 +264,62 @@ public class ClubSeneca
 
 	public void generarReporteDeportivo(String periodo, Competencia competencia)
 	{
-		System.out.println("Reporte de " + competencia.getNombre() + " - " + periodo);
-		System.out.println("Equipos inscritos: " + competencia.consultarEquiposInscritos().size());
+	    System.out.println("Reporte de " + competencia.getNombre() + " - " + periodo);
+	    System.out.println("Equipos inscritos: " + competencia.consultarEquiposInscritos().size());
 
-		if (competencia instanceof TorneoDeLosCerros)
-		{
-			TorneoDeLosCerros torneo = (TorneoDeLosCerros) competencia;
-			SimpleDateFormat formato = new SimpleDateFormat("yyyy-MM");
-			int jugados = 0;
+	    if (competencia instanceof TorneoDeLosCerros)
+	    {
+	        TorneoDeLosCerros torneo = (TorneoDeLosCerros) competencia;
 
-			for (Partido partido : torneo.getPartidos())
-			{
-				if (partido.getFecha() != null && formato.format(partido.getFecha()).equals(periodo)
-						&& "Finalizado".equals(partido.getEstado()))
-				{
-					System.out.println(partido.getEquipoLocal().getNombre() + " " + partido.getMarcadorLocal()
-							+ " - " + partido.getMarcadorVisitante() + " " + partido.getEquipoVisitante().getNombre());
-					jugados++;
-				}
-			}
-			System.out.println("Partidos jugados en " + periodo + ": " + jugados);
+	        SimpleDateFormat formato = new SimpleDateFormat("yyyy-MM");
+	        int jugados = 0;
 
-			torneo.actualizarTablaPosiciones();
-			System.out.println("Tabla de posiciones:");
-			for (Equipo equipo : torneo.consultarTablaPosiciones())
-			{
-				System.out.println(torneo.determinarPosicion(equipo) + ". " + equipo.getNombre()
-						+ " - " + torneo.calcularPuntosEquipo(equipo) + " pts");
-			}
-		}
-		else if (competencia instanceof CompetenciaASCUN)
-		{
-			CompetenciaASCUN ascun = (CompetenciaASCUN) competencia;
-			System.out.println("Formato: fase de grupos + eliminacion directa");
-			System.out.println("Grupos: " + ascun.getNumGrupos() + " | Equipos por grupo: " + ascun.getEquiposPorGrupo());
-			for (Equipo equipo : ascun.consultarEquiposInscritos())
-			{
-				System.out.println("  " + equipo.getNombre());
-			}
-		}
+	        for (Partido partido : torneo.getPartidos())
+	        {
+	            if (partido.getFecha() != null
+	                    && formato.format(partido.getFecha()).equals(periodo)
+	                    && "Finalizado".equals(partido.getEstado()))
+	            {
+	                System.out.println(
+	                    partido.getEquipoLocal().getNombre() + " "
+	                    + partido.getMarcadorLocal()
+	                    + " - "
+	                    + partido.getMarcadorVisitante() + " "
+	                    + partido.getEquipoVisitante().getNombre()
+	                );
+
+	                jugados++;
+	            }
+	        }
+
+	        System.out.println("Partidos jugados en " + periodo + ": " + jugados);
+
+	        torneo.actualizarTablaPosiciones();
+
+	        System.out.println("Tabla de posiciones:");
+
+	        for (Equipo equipo : torneo.consultarTablaPosiciones())
+	        {
+	            System.out.println(
+	                torneo.determinarPosicion(equipo) + ". "
+	                + equipo.getNombre() + " - "
+	                + torneo.calcularPuntosEquipo(equipo) + " pts"
+	            );
+	        }
+	    }
+	    else if (competencia instanceof CompetenciaASCUN)
+	    {
+	        CompetenciaASCUN ascun = (CompetenciaASCUN) competencia;
+
+	        System.out.println("Formato: fase de grupos + eliminacion directa");
+	        System.out.println("Grupos: " + ascun.getNumGrupos()
+	                + " | Equipos por grupo: " + ascun.getEquiposPorGrupo());
+
+	        for (Equipo equipo : ascun.consultarEquiposInscritos())
+	        {
+	            System.out.println("  " + equipo.getNombre());
+	        }
+	    }
 	}
 
 	public void crearTorneo(Torneo torneo)
@@ -341,5 +402,51 @@ public class ClubSeneca
 		{
 			torneo.finalizar(posiciones);
 		}
+	}
+	
+	public boolean agregarDeporteIndividual(DeporteIndividual deporte)
+	{
+	    if (deporte == null)
+	    {
+	        return false;
+	    }
+
+	    for (DeporteIndividual existente : deportesIndividuales)
+	    {
+	        if (existente.getClass().equals(deporte.getClass())
+	                && existente.obtenerNombre().equalsIgnoreCase(deporte.obtenerNombre()))
+	        {
+	            return false;
+	        }
+	    }
+
+	    deportesIndividuales.add(deporte);
+	    return true;
+	}
+
+	public DeporteIndividual consultarDeporteIndividual(String nombre)
+	{
+	    for (DeporteIndividual deporte : deportesIndividuales)
+	    {
+	        if (deporte.obtenerNombre().equalsIgnoreCase(nombre))
+	        {
+	            return deporte;
+	        }
+	    }
+
+	    return null;
+	}
+
+	public boolean eliminarDeporteIndividual(String nombre)
+	{
+	    DeporteIndividual deporte = consultarDeporteIndividual(nombre);
+
+	    if (deporte == null)
+	    {
+	        return false;
+	    }
+
+	    deportesIndividuales.remove(deporte);
+	    return true;
 	}
 }

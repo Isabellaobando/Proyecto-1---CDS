@@ -1,6 +1,6 @@
 package cafeteria;
 
-public class Producto {
+public class Producto implements java.io.Serializable {
 	protected String nombre;
     protected double precio;
     protected String categoria;

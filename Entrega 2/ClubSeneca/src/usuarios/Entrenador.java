@@ -1,12 +1,13 @@
 package usuarios;
 
 import java.util.Date;
+import java.util.ArrayList;
 import java.util.List;
 
 import deportes.Deporte;
 import entrenamientos.SesionEntrenamiento;
 
-public class Entrenador extends EmpleadoClub{
+public class Entrenador extends EmpleadoClub implements java.io.Serializable {
 	private Deporte deporte;
 	private List<SesionEntrenamiento> entrenamientos; 
 	
@@ -14,6 +15,7 @@ public class Entrenador extends EmpleadoClub{
 			Date fechaNacimiento, int edad, String noEmpleado, Deporte deporte) {
 		super(id, nombre, email, login, password, telefono, fechaNacimiento, edad, noEmpleado);
 		this.deporte = deporte;
+		this.entrenamientos = new ArrayList<>();
 	}
 	
 	public Deporte getDeporte() {
@@ -22,6 +24,7 @@ public class Entrenador extends EmpleadoClub{
 	
 	public void setDeporte(Deporte deporte) {
 		this.deporte = deporte;
+		this.entrenamientos = new ArrayList<>();
 	}
 
 	public List<SesionEntrenamiento> getEntrenamientos() {

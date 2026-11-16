@@ -5,7 +5,7 @@ import java.util.List;
 
 import equipos.Equipo;
 
-public class Fisioterapeuta extends EmpleadoClub{
+public class Fisioterapeuta extends EmpleadoClub implements java.io.Serializable {
 	private List<Equipo> equipos;
 	
 	public Fisioterapeuta(int id, String nombre, String email, String login, String password, String telefono,

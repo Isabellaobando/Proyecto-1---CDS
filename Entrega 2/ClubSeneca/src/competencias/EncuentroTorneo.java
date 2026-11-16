@@ -5,8 +5,7 @@ import java.util.Date;
 
 import usuarios.Participante;
 
-public class EncuentroTorneo
-{
+public class EncuentroTorneo implements java.io.Serializable {
 	private Participante participanteA;
 	private Participante participanteB;
 	private Date fecha;

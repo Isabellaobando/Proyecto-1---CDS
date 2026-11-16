@@ -6,8 +6,7 @@ import java.util.List;
 import competencias.Torneo;
 import deportes.Deporte;
 
-public class Pareja implements Participante
-{
+public class Pareja implements Participante, java.io.Serializable {
 	private Participante jugador1;
 	private Participante jugador2;
 

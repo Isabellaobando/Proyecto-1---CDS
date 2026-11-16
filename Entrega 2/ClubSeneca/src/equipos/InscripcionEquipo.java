@@ -4,8 +4,7 @@ import java.util.Date;
 
 import usuarios.Jugador;
 
-public class InscripcionEquipo 
-{
+public class InscripcionEquipo implements java.io.Serializable {
 	private String posicion;
 
 	private int numCamisa;
@@ -97,8 +96,6 @@ public class InscripcionEquipo
 	{
 		return fechaInscripcion;
 	}
-
-
 
 
 

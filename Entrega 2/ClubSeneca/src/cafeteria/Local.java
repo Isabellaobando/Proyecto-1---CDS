@@ -3,8 +3,7 @@ package cafeteria;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Local 
-{
+public class Local implements java.io.Serializable {
 	private String nombre;
     private String horaApertura;
     private String horaSalida;

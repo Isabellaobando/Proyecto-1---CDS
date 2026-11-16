@@ -7,7 +7,7 @@ import java.util.Set;
 
 import equipos.Equipo;
 
-public abstract class DeporteGrupal extends Deporte {
+public abstract class DeporteGrupal extends Deporte implements java.io.Serializable {
 	public static final Set<String> categorias = new HashSet<String>(Set.of("SUB-13", "SUB-15", "SUB-17", "MAYORES"));
 	protected int minJugadores;
 	protected int maxJugadores;

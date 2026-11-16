@@ -7,8 +7,7 @@ import java.util.List;
 import usuarios.EmpleadoClub;
 import usuarios.Usuario;
 
-public class Venta 
-{
+public class Venta implements java.io.Serializable {
     private static final double impuestoCafeteria = 0.08;
     private static final double impuestoTienda = 0.19;
     private static final double porcentajePuntos = 0.02;

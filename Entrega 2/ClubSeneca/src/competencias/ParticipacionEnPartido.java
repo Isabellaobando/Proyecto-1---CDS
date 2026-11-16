@@ -5,7 +5,7 @@ package competencias;
 import estadistica.Estadisticas;
 import usuarios.Jugador;
 
-public class ParticipacionEnPartido {
+public class ParticipacionEnPartido implements java.io.Serializable {
 
     private boolean titular;
     private int minutosJugados;

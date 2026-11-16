@@ -12,8 +12,7 @@ import usuarios.Participante;
 import usuarios.Usuario;
 
 
-public class Equipo implements Participante 
-{
+public class Equipo implements Participante, java.io.Serializable {
 	private String categoria;
 	private String nombre;
 	private boolean activo;
@@ -41,6 +40,11 @@ public class Equipo implements Participante
 	public void setActivo(boolean activo) 
 	{
 		this.activo = activo;
+	}
+	
+	public DeporteGrupal getDeporte()
+	{
+	    return this.deporte;
 	}
 
 	public List<Partido> getProximosPartido() 
@@ -184,17 +188,29 @@ public class Equipo implements Participante
 	}
 
 	@Override
-	public boolean puedeInscribirse(Torneo torneo) 
+	public boolean puedeInscribirse(Torneo torneo)
 	{
-		if (torneo.getDeporte() != this.deporte) 
-		{
-			return false;
-		}
-		if (!this.categoria.equalsIgnoreCase(torneo.getCategoria())) 
-		{
-			return false;
-		}
-		return puedeCompetir();
+	    if (torneo == null || torneo.getDeporte() == null || this.deporte == null)
+	    {
+	        return false;
+	    }
+
+	    if (!torneo.getDeporte().getClass().equals(this.deporte.getClass()))
+	    {
+	        return false;
+	    }
+
+	    if (!torneo.getDeporte().obtenerNombre().equalsIgnoreCase(this.deporte.obtenerNombre()))
+	    {
+	        return false;
+	    }
+
+	    if (!this.categoria.equalsIgnoreCase(torneo.getCategoria()))
+	    {
+	        return false;
+	    }
+
+	    return puedeCompetir();
 	}
 
 	@Override

@@ -1,6 +1,6 @@
 package instalaciones;
 
-public class Instalacion {
+public class Instalacion implements java.io.Serializable {
 	
 	private String nombre;
     private String tipoDeporte;

@@ -1,6 +1,6 @@
 package deportes;
 
-public abstract class Deporte {
+public abstract class Deporte implements java.io.Serializable {
 	
 	// Atributos
 	

@@ -8,7 +8,7 @@ import equipos.Equipo;
 import equipos.InscripcionEquipo;
 import usuarios.Jugador;
 
-public class InscripcionCompetencia {
+public class InscripcionCompetencia implements java.io.Serializable {
 	private Date fechaInscripcion;
 	private Equipo equipo;
 	

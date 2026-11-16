@@ -1,6 +1,6 @@
 package estadistica;
 
-public class EstadisticasFutbol extends Estadisticas {
+public class EstadisticasFutbol extends Estadisticas implements java.io.Serializable {
 	
 	private int goles;
     private int asistencias;

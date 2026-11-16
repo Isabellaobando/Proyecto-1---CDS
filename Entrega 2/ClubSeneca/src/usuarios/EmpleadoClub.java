@@ -9,8 +9,7 @@ import competencias.Torneo;
 import deportes.Deporte;
 import deportes.DeporteGrupal;
 
-public class EmpleadoClub extends Usuario implements Participante
-{
+public class EmpleadoClub extends Usuario implements Participante, java.io.Serializable {
 	private String noEmpleado;
 	private List<Date> turnos;
 

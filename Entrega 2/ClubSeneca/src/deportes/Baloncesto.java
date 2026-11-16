@@ -1,6 +1,6 @@
 package deportes;
 
-public class Baloncesto extends DeporteGrupal{
+public class Baloncesto extends DeporteGrupal implements java.io.Serializable {
 	
 	// Constructor 
 	

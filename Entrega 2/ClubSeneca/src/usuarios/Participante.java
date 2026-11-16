@@ -4,7 +4,7 @@ import java.util.List;
 import competencias.Torneo;
 import deportes.Deporte;
 
-public interface Participante
+public interface Participante extends java.io.Serializable
 {
 	public String getNombre();
 

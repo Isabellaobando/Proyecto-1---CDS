@@ -2,7 +2,7 @@ package entrenamientos;
 
 import java.util.Date;
 
-public class AsistenciaEntrenamiento {
+public class AsistenciaEntrenamiento implements java.io.Serializable {
 
     private SesionEntrenamiento sesion;
     private String idDeportista;

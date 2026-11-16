@@ -3,7 +3,7 @@ package estadistica;
 import java.util.HashMap;
 import usuarios.Jugador;
 
-public class Estadisticas {
+public class Estadisticas implements java.io.Serializable {
 
     private HashMap<String, Integer> datos;
 

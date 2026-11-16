@@ -1,6 +1,6 @@
 package cafeteria;
 
-public class Bebida extends Producto{
+public class Bebida extends Producto implements java.io.Serializable {
 	private boolean esCaliente;
 	
 	public Bebida(String nombre, double precio, String categoria, int stock, boolean esCaliente) {

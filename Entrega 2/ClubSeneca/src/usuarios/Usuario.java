@@ -2,7 +2,7 @@ package usuarios;
 
 import java.util.Date;
 
-public abstract class Usuario {
+public abstract class Usuario implements java.io.Serializable {
 	
 	// Atributos
 	
@@ -58,14 +58,9 @@ public abstract class Usuario {
 	 */
 	
 	public boolean validarCredenciales(String login, String password) {
-		if( login == this.login && password == this.password) {
-			return true;
-		}
-		
-		else {
-			return false;
-		}
-		
+		return login != null && password != null
+				&& login.equals(this.login)
+				&& password.equals(this.password);
 	}
 	
 	public int getEdad() {

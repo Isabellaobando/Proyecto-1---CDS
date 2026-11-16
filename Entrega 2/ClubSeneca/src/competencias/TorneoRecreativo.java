@@ -8,8 +8,7 @@ import usuarios.Jugador;
 import usuarios.Participante;
 import usuarios.Usuario;
 
-public class TorneoRecreativo extends Torneo
-{
+public class TorneoRecreativo extends Torneo implements java.io.Serializable {
 	private double porcentajeBono;
 	private int bonosGenerados;
 
