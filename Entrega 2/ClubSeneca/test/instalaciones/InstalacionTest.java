@@ -1,5 +1,5 @@
 
-package instalacion;
+package instalaciones;
 
 import static org.junit.jupiter.api.Assertions.*;
 import instalaciones.Instalacion;

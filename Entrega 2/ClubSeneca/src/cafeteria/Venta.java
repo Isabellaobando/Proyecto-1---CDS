@@ -104,6 +104,7 @@ public class Venta implements java.io.Serializable {
             return false;
         }
         this.bonoAplicado = bono;
+        bono.setRedimido();
         return true;
     }
 
