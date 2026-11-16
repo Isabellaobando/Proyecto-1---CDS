@@ -63,6 +63,9 @@ public class ConsolaClubSeneca {
 
     private ClubSeneca club;
 
+    /** Usuario autenticado durante la sesión actual. */
+    private Usuario usuarioActual;
+
     public ConsolaClubSeneca() {
         this(new Scanner(System.in), new ClubSeneca());
     }
@@ -185,6 +188,7 @@ public class ConsolaClubSeneca {
                 salir = true;
                 continue;
             }
+            usuarioActual = usuario;
             System.out.println("\nBienvenido/a, " + usuario.getNombre() + ".");
             boolean cerrarSesion = false;
             while (!cerrarSesion && !salir) {
@@ -201,6 +205,7 @@ public class ConsolaClubSeneca {
                 }
             }
             if (salir) break;
+            usuarioActual = null;
             System.out.println("Sesión cerrada correctamente.");
         }
         scanner.close();
@@ -1821,20 +1826,53 @@ private void retirarJugadorEquipo() {
     // GESTIÓN DE CAFETERÍA
     // =========================================
 
+    private boolean esAdministradorActual() {
+        return usuarioActual instanceof Administrador;
+    }
+
+    private boolean puedeRegistrarVentaActual() {
+        if (usuarioActual instanceof Administrador || usuarioActual instanceof Jugador) return true;
+        return usuarioActual != null
+                && usuarioActual.getClass() == EmpleadoClub.class;
+    }
+
+    private boolean tienePermisoCafeteria(int opcion) {
+        if (esAdministradorActual()) return opcion >= 1 && opcion <= 8;
+        // El empleado general y el jugador pueden vender; los demás roles
+        // solamente pueden consultar locales y productos.
+        if (opcion == 2 || opcion == 4) {
+            return usuarioActual != null;
+        }
+        return opcion == 7 && puedeRegistrarVentaActual();
+    }
+
     private void menuCafeteria() {
         int opcion = -1;
         while (opcion != 0) {
             System.out.println("\n===== GESTIÓN DE CAFETERÍA =====");
-            System.out.println("1. Registrar local");
-            System.out.println("2. Listar locales");
-            System.out.println("3. Registrar producto en un local");
-            System.out.println("4. Listar productos de un local");
-            System.out.println("5. Reabastecer producto");
-            System.out.println("6. Eliminar producto");
-            System.out.println("7. Registrar venta");
-            System.out.println("8. Consultar ventas de un local");
+            if (esAdministradorActual()) {
+                System.out.println("1. Registrar local");
+                System.out.println("2. Listar locales");
+                System.out.println("3. Registrar producto en un local");
+                System.out.println("4. Listar productos de un local");
+                System.out.println("5. Reabastecer producto");
+                System.out.println("6. Eliminar producto");
+                System.out.println("7. Registrar venta");
+                System.out.println("8. Consultar ventas de un local");
+            } else {
+                System.out.println("2. Listar locales");
+                System.out.println("4. Listar productos de un local");
+                if (puedeRegistrarVentaActual()) {
+                    System.out.println("7. Registrar venta");
+                }
+            }
             System.out.println("0. Volver al menú principal");
             opcion = leerEntero("Seleccione una opción: ");
+            if (opcion == 0) break;
+            if (!tienePermisoCafeteria(opcion)) {
+                System.out.println("No tiene permisos para realizar esta operación.");
+                continue;
+            }
             switch (opcion) {
                 case 1: registrarLocal(); break;
                 case 2: listarLocales(); break;
@@ -1844,13 +1882,13 @@ private void retirarJugadorEquipo() {
                 case 6: eliminarProducto(); break;
                 case 7: registrarVenta(); break;
                 case 8: consultarVentas(); break;
-                case 0: break;
                 default: System.out.println("Opción no válida.");
             }
         }
     }
 
     private void registrarLocal() {
+        if (!esAdministradorActual()) { System.out.println("Solo el administrador puede registrar locales."); return; }
         System.out.println("\n===== REGISTRAR LOCAL =====");
         String nombre = leerTexto("Nombre del local: ");
         if (club.consultarLocal(nombre) != null) {
@@ -1896,6 +1934,7 @@ private void retirarJugadorEquipo() {
     }
 
     private void registrarProducto() {
+        if (!esAdministradorActual()) { System.out.println("Solo el administrador puede registrar productos."); return; }
         System.out.println("\n===== REGISTRAR PRODUCTO =====");
         Local local = seleccionarLocal();
         if (local == null) return;
@@ -1945,6 +1984,7 @@ private void retirarJugadorEquipo() {
     }
 
     private void reabastecerProducto() {
+        if (!esAdministradorActual()) { System.out.println("Solo el administrador puede reabastecer productos."); return; }
         System.out.println("\n===== REABASTECER PRODUCTO =====");
         Local local = seleccionarLocal();
         if (local == null) return;
@@ -1971,6 +2011,7 @@ private void retirarJugadorEquipo() {
     }
 
     private void eliminarProducto() {
+        if (!esAdministradorActual()) { System.out.println("Solo el administrador puede eliminar productos."); return; }
         System.out.println("\n===== ELIMINAR PRODUCTO =====");
         Local local = seleccionarLocal();
         if (local == null) return;
@@ -1990,6 +2031,7 @@ private void retirarJugadorEquipo() {
     }
 
     private void registrarVenta() {
+        if (!puedeRegistrarVentaActual()) { System.out.println("Solo el empleado general o un jugador pueden registrar ventas."); return; }
         System.out.println("\n===== REGISTRAR VENTA =====");
         Local local = seleccionarLocal();
         if (local == null) return;
@@ -2098,6 +2140,7 @@ private void retirarJugadorEquipo() {
     }
 
     private void consultarVentas() {
+        if (!esAdministradorActual()) { System.out.println("Solo el administrador puede consultar las ventas."); return; }
         System.out.println("\n===== CONSULTAR VENTAS =====");
         Local local = seleccionarLocal();
         if (local == null) return;
